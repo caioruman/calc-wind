@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 from scipy import stats
 import matplotlib.pyplot as plt
+import os
 
 from datetime import date, datetime, timedelta
 
@@ -28,13 +29,18 @@ import time
 def main():
 
   exp = "PanArctic_0.5d_ERAINT_NOCTEM_RUN"
+  exp = "PanArctic_0.5d_CanHisto_NOCTEM_RUN"
   main_folder = "/pixel/project01/cruman/ModelData/{0}".format(exp)
+  folder = "/home/cruman/Scripts/calc-wind"
+  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
 
-  datai = 1980
-  dataf = 2015
+  datai = 2053
+  dataf = 2069
 
   # to be put in a loop later. 
   for year in range(datai, dataf+1):
+    os.system('mkdir -p CSV_RCP/{0}'.format(year))
+
     for month in range(1,13):
   #year = 1980
   #month = 1
@@ -69,7 +75,9 @@ def main():
         #t2m = np.squeeze(r.variables["TT"][:])  
         #t2m = r.get_first_record_for_name("TT", label="PAN_ERAI_DEF")
 
-        var = r.get_4d_field('TT', label="PAN_ERAI_DEF")
+        #PAN_CAN85_CT
+        #PAN_ERAI_DEF
+        var = r.get_4d_field('TT', label="PAN_CAN85_CT")
         dates_tt = list(sorted(var.keys()))        
         key = [*var[dates_tt[0]].keys()][0]
         var_3d = np.asarray([var[d][key] for d in dates_tt])        
@@ -132,8 +140,8 @@ def main():
         df1 = pd.DataFrame(data=neg_wind_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_wind_press, columns=levels[10:])
 
-        df1.to_csv("CSV/{0}_windpress_neg.csv".format(name))
-        df2.to_csv("CSV/{0}_windpress_pos.csv".format(name))
+        df1.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year))
+        df2.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_pos.csv".format(folder, name, year, month, year))
 
         df1 = pd.DataFrame(data=neg_tt_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_tt_press, columns=levels[10:])
@@ -146,9 +154,9 @@ def main():
         df2 = df2.assign(T2M=pos_t2m)
         df2 = df2.assign(UV=pos_wind)
 
-        df1.to_csv("CSV/{0}_neg.csv".format(name))
-        df2.to_csv("CSV/{0}_pos.csv".format(name))
-        sys.exit()
+        df1.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_neg.csv".format(folder, name, year, month, year))
+        df2.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_pos.csv".format(folder, name, year, month, year))
+  #      sys.exit()
 
 
 

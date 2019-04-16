@@ -1,16 +1,17 @@
-import numpy as np
-import pandas as pd
 import sys
-from scipy import stats
+from sklearn.cluster import KMeans
+from sklearn.mixture import GaussianMixture
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-
-from datetime import date, datetime, timedelta
-
-import time
+from os import listdir
+from glob import glob
 
 '''
   - Read the wind data divided by positive and negative SHF values
   - Apply clustering analysis to each dataset to divide it between Unstable/Shear Driven and WSBL/VSBL
+
+  to do: Weibull distribution, other things?
 '''
 
 def main():
@@ -27,89 +28,75 @@ def main():
       lons.append(float(aa[5]))
       stnames.append(aa[1].replace(',',"_"))
 
+  datai = 1980
+  dataf = 2015
+
   # looping throught all the stations
   for lat, lon, name in zip(lats, lons, stnames):
 
-    # Open the .csv
-    df1 = pd.read_csv("{0}_neg.csv".format(name), index_col=0)
-    df2 = pd.read_csv("{0}_pos.csv".format(name), index_col=0)
+    for month in range(1,13):
 
-    [10.0, 15.0, 20.0, 30.0, 50.0, 70.0, 100.0, 150.0, 200.0, 250.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
-    df1 = df1.drop(columns=['10.0', '15.0', '20.0', '30.0', '50.0', '70.0', '100.0', '150.0', '200.0', '250.0', '300.0', '400.0', '500.0', '600.0'])
-    print(df1)
-    sys.exit()
+      filepaths_n = []
+      filepaths_p = []
+      for year in range(datai, dataf+1):
 
-    # Delete the upper levels of the atmosphere. I need only up to 700 hPa.
+        # Open the .csv
+        #filepaths_n.extend(glob('CSV/*{1}*_windpress_neg.csv'.format(month, year)))        
+        filepaths_n.extend(glob('CSV/*{1}{0:02d}_windpress_neg.csv'.format(month, year)))
+        filepaths_p.extend(glob('CSV/*{1}{0:02d}_windpress_pos.csv'.format(month, year)))
+              
+      df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)
+      df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)      
 
-    # For each level, do the K-means analysis
+      #[10.0, 15.0, 20.0, 30.0, 50.0, 70.0, 100.0, 150.0, 200.0, 250.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
+      # Delete the upper levels of the atmosphere. I need only up to 700 hPa.
+      df_n = df_n.drop(columns=['300.0', '400.0', '500.0', '600.0'])
+      df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0'])
+
+      centroids_n, histo_n, perc_n = kmeans_probability(df_n)
+      centroids_p, histo_p, perc_p = kmeans_probability(df_p)
+
+      # do stuff
+
+
+def kmeans_probability(df):
+  '''
+    For now fixed at 2 clusters
+
+    returns: Array of the centroids, the two histograms and % of each group
+  '''
+
+  kmeans = KMeans(n_clusters=2, random_state=0).fit(df)
+        
+  # Getting the location of each group.
+  pred = kmeans_n.predict(df)
+  labels = np.equal(pred, 0)
+
+  # Converting to numpy array
+  df_a = np.array(df)
+
+  # Dividing between the 2 clusters
+  df_0 = df_a[labels,:]
+  df_1 = df_a[~labels,:]
+
+  # Getting the probability distribution. Bins of 0.5 m/s
+  hist_0 = calc_histogram(df_0)
+  hist_1 = calc_histogram(df_1)
+
+  return kmeans_n.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]]
+
+def calc_histogram(df):
+
+  hist_l = []
+  bins = np.arange(0,80.5,0.5)
+  for i in range(0, df.columns):
+      hist, bins = np.histogram(df[:,i], bins=bins)
+      hist_l.append(hist*100/sum(hist))
+
+  return np.array(hist_l)
     
 
 
-
-
-  # params = stats.exponweib.fit(data, floc=0, f0=1)
-  # shape = params[1]
-  # scale = params[3]
-
-  # print('shape:',shape)
-  # print('scale:',scale)
-
-  # #### Plotting
-  # fig = plt.figure(figsize=(11, 11), frameon=False, dpi=100)
-  # # Histogram first
-  # values,bins,hist = plt.hist(data,bins=51,range=(0,25),density=True)
-  # center = (bins[:-1] + bins[1:]) / 2.
-
-  # # Using all params and the stats function
-  # plt.plot(center,stats.exponweib.pdf(center,*params),lw=4,label='scipy')
-
-  #   #/pixel/project01/cruman/ModelData/PanArctic_0.5d_ERAINT_NOCTEM_RUN/Samples/PanArctic_0.5d_ERAINT_NOCTEM_RUN_198001
-  # plt.legend()
-  # plt.savefig('testea.png')
-  # plt.close()
-
-  # fig = plt.figure(figsize=(11, 11), frameon=False, dpi=100)
-
-  # print(shape.data)
-  # plt.plot(np.arange(len(data)), data)
-
-  # plt.savefig("Teste2a.png")
-  # plt.close()
-
-  # fig = plt.figure(figsize=(11, 11), frameon=False, dpi=100)
-
-  # print(shape.data)
-  # plt.plot(np.arange(len(data)), shf[:,i,j])
-
-  # plt.savefig("Teste_shfa.png")
-  # plt.close()  
-
-
-
-
-def geo_idx(dd, dd_array, type="lat"):
-  '''
-    search for nearest decimal degree in an array of decimal degrees and return the index.
-    np.argmin returns the indices of minium value along an axis.
-    so subtract dd from all values in dd_array, take absolute value and find index of minimum.
-    
-    Differentiate between 2-D and 1-D lat/lon arrays.
-    for 2-D arrays, should receive values in this format: dd=[lat, lon], dd_array=[lats2d,lons2d]
-  '''
-  if type == "lon" and len(dd_array.shape) == 1:
-    dd_array = np.where(dd_array <= 180, dd_array, dd_array - 360)
-
-  if (len(dd_array.shape) < 2):
-    geo_idx = (np.abs(dd_array - dd)).argmin()
-  else:
-    if (dd_array[1] < 0).any():
-      dd_array[1] = np.where(dd_array[1] <= 180, dd_array[1], dd_array[1] - 360)
-
-    a = abs( dd_array[0]-dd[0] ) + abs(  np.where(dd_array[1] <= 180, dd_array[1], dd_array[1] - 360) - dd[1] )
-    i,j = np.unravel_index(a.argmin(), a.shape)
-    geo_idx = [i,j]
-
-  return geo_idx
 
 
 if __name__ == "__main__":

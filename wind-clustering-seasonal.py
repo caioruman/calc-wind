@@ -5,9 +5,12 @@ from sklearn.neighbors import KernelDensity
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from os import listdir
 from glob import glob
 import cmocean
+
+from common_functions import interpPressure, calc_height
 
 '''
   - Read the wind data divided by positive and negative SHF values
@@ -33,7 +36,7 @@ def main():
   datai = 1986
   dataf = 2015
 
-  percentage = open('percentage_seasonal_deleteme.txt', 'w')
+  percentage = open('percentage_seasonal_v3.txt', 'w')
   percentage.write("Station Neg Pos Neg1 Neg2 Pos1 Pos2\n")
 
   # looping throught all the stations
@@ -117,13 +120,13 @@ def main():
       shf.append('SHF+')
       shf.append('SHF+')
 
-      plot_wind_seasonal(cent, histo, perc, shf, datai, dataf, name, sname)
+      plot_wind_seasonal(cent, histo, perc, shf, datai, dataf, name, sname, season)
 
       #plot_wind(centroids_p[0], histo_p[0], perc_p[0], datai, dataf, name, "positive_type1", sname)
       #plot_wind(centroids_p[1], histo_p[1], perc_p[1], datai, dataf, name, "positive_type2", sname)
 
       percentage.write("{0} {1:2.2f} {2:2.2f} {3:2.2f} {4:2.2f} {5:2.2f} {6:2.2f} {7}\n".format(name, p_neg, p_pos, perc_n[0], perc_n[1], perc_p[0], perc_p[1], sname))
-      sys.exit()
+      #sys.exit()
 
   percentage.close()
             
@@ -154,9 +157,10 @@ def plot_wind(centroids, histo, perc, datai, dataf, name, ptype, month):
 
   return None
 
-def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period):
+def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, season):
 
   y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
+  y = calc_height(season, 1986, 2015, y)
   #x = np.arange(0,40,1)
   x = np.arange(0,40,0.5)
   X, Y= np.meshgrid(x, y)
@@ -164,7 +168,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period):
   vmax=15
   v = np.arange(vmin, vmax+1, 2)  
 
-  fig = plt.figure(figsize=[28,16])
+  fig, axes = plt.subplots(nrows=2, ncols=2, figsize=[28,16], sharex=True, sharey=True)
 
   for k, letter in zip(range(0,4), ['a', 'b', 'c', 'd']):
     subplt = '22{0}'.format(k+1)
@@ -174,18 +178,27 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period):
     CS.set_clim(vmin, vmax)
     plt.gca().invert_yaxis()
     plt.plot(centroids[k], y, color='white', marker='o', lw=4, markersize=10, markeredgecolor='k')
-    CB = plt.colorbar(CS, extend='both', ticks=v)
-    CB.ax.tick_params(labelsize=20)
+    #if (k%2) == 1:
+          
+    #CB = plt.colorbar(CS, extend='both', ticks=v)
+    #CB.ax.tick_params(labelsize=20)
     plt.xlim(0,39)
-    plt.ylim(1000,700)
+    plt.ylim(min(y),max(y))
     plt.xticks(np.arange(0,40,5), fontsize=20)
-    plt.yticks(y, fontsize=20)
+    plt.yticks(np.arange(0,2401,200), fontsize=20)
     plt.title('({0}) {1:2.2f} % {2}'.format(letter, perc[k], shf[k]), fontsize='20')
-  plt.tight_layout()
-  plt.savefig('Images/{0}_{1}{2}_{3}_v2.png'.format(name, datai, dataf, period), pad_inches=0.0, bbox_inches='tight')
+  
+  
+  #cax,kw = mpl.colorbar.make_axes([ax for ax in axes.flat])
+  cax = fig.add_axes([0.92, 0.1, 0.02, 0.8]) 
+  CB = plt.colorbar(CS, cax=cax, extend='both', ticks=v)  
+  CB.ax.tick_params(labelsize=20)
+  #plt.tight_layout()
+  plt.savefig('Images/{0}_{1}{2}_{3}_v3.png'.format(name, datai, dataf, period), bbox_inches='tight')
   plt.close()
+  #sys.exit()
 
-  return None
+  return None  
 
 def kmeans_probability(df):
   '''
@@ -215,7 +228,6 @@ def kmeans_probability(df):
   hist_1 = calc_kerneldensity(df_1)
 
   #print(np.mean(df_0, axis=0), np.mean(df_1, axis=0), kmeans.cluster_centers_)
-  #sys.exit()
 
   return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]]
 

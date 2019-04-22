@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from os import listdir
 from glob import glob
+import cmocean
 
 '''
   - Read the wind data divided by positive and negative SHF values
@@ -28,14 +29,18 @@ def main():
       lons.append(float(aa[5]))
       stnames.append(aa[1].replace(',',"_"))
 
-  datai = 1980
+  datai = 1986
   dataf = 2015
+
+  percentage = open('percentage.txt', 'w')
+  percentage.write("Station Neg Pos Neg1 Neg2 Pos1 Pos2\n")
 
   # looping throught all the stations
   for lat, lon, name in zip(lats, lons, stnames):
 
     for month in range(1,13):
 
+      print(name, month)
       filepaths_n = []
       filepaths_p = []
       for year in range(datai, dataf+1):
@@ -53,11 +58,49 @@ def main():
       df_n = df_n.drop(columns=['300.0', '400.0', '500.0', '600.0'])
       df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0'])
 
+      p_neg = len(df_n.index)*100/(len(df_n.index) + len(df_p.index))
+      p_pos = len(df_p.index)*100/(len(df_n.index) + len(df_p.index))
+
       centroids_n, histo_n, perc_n = kmeans_probability(df_n)
+
+      #plot_wind(centroids_n[0], histo_n[0], perc_n[0], datai, dataf, name, "negative_type1", month)
+      #plot_wind(centroids_n[1], histo_n[1], perc_n[1], datai, dataf, name, "negative_type2", month)
+
       centroids_p, histo_p, perc_p = kmeans_probability(df_p)
 
-      # do stuff
+      #plot_wind(centroids_p[0], histo_p[0], perc_p[0], datai, dataf, name, "positive_type1", month)
+      #plot_wind(centroids_p[1], histo_p[1], perc_p[1], datai, dataf, name, "positive_type2", month)
 
+      percentage.write("{0} {1:2.2f} {2:2.2f} {3:2.2f} {4:2.2f} {5:2.2f} {6:2.2f}\n".format(name, p_neg, p_pos, perc_n[0], perc_n[1], perc_p[0], perc_p[1]))
+
+  percentage.close()
+            
+def plot_wind(centroids, histo, perc, datai, dataf, name, ptype, month):
+
+  y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
+  x = np.arange(0,80,1)
+  X, Y= np.meshgrid(x, y)
+  vmin=0
+  vmax=15
+  v = np.arange(vmin, vmax+1, 2)
+
+  fig = plt.figure(figsize=[14,8])
+  CS = plt.contourf(X, Y, histo, v, cmap='cmo.haline', extend='max')
+  CS.set_clim(vmin, vmax)
+  plt.gca().invert_yaxis()
+  plt.plot(centroids, y, color='white', marker='o', lw=4, markersize=10, markeredgecolor='k')
+  CB = plt.colorbar(CS, extend='both', ticks=v)
+  CB.ax.tick_params(labelsize=20)
+  plt.xlim(0,75)
+  plt.ylim(1000,700)
+  plt.xticks(np.arange(0,80,5), fontsize=20)
+  plt.yticks(y, fontsize=20)
+  plt.title('{0}:{1} - {2:2.2f}% - {3} - {4}'.format(datai, dataf, perc, name, month), fontsize='20')
+  plt.tight_layout()
+  plt.savefig('Images/{0}_{1}{2}_{3}_{4}.png'.format(name, datai, dataf, ptype, month), pad_inches=0.0, bbox_inches='tight')
+  plt.close()
+
+  return None
 
 def kmeans_probability(df):
   '''
@@ -65,11 +108,10 @@ def kmeans_probability(df):
 
     returns: Array of the centroids, the two histograms and % of each group
   '''
-
   kmeans = KMeans(n_clusters=2, random_state=0).fit(df)
         
   # Getting the location of each group.
-  pred = kmeans_n.predict(df)
+  pred = kmeans.predict(df)
   labels = np.equal(pred, 0)
 
   # Converting to numpy array
@@ -83,15 +125,18 @@ def kmeans_probability(df):
   hist_0 = calc_histogram(df_0)
   hist_1 = calc_histogram(df_1)
 
-  return kmeans_n.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]]
+  #print(np.mean(df_0, axis=0), np.mean(df_1, axis=0), kmeans.cluster_centers_)
+  #sys.exit()
+
+  return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]]
 
 def calc_histogram(df):
 
   hist_l = []
-  bins = np.arange(0,80.5,0.5)
-  for i in range(0, df.columns):
-      hist, bins = np.histogram(df[:,i], bins=bins)
-      hist_l.append(hist*100/sum(hist))
+  bins = np.arange(0,80.5,1)
+  for i in range(0, df.shape[1]):    
+    hist, bins = np.histogram(df[:,i], bins=bins)
+    hist_l.append(hist*100/sum(hist))
 
   return np.array(hist_l)
     

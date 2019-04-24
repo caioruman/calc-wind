@@ -66,7 +66,7 @@ def main():
                 'VSBL: Current Climate', 'WSBL: Current Climate', 'VSBL: 2070:2099 - Current', 'VSBL: 2070:2099 - Current',
                 '{0} Percentage of occurance of PBL Regimes, {1}, RCP8.5'.format(name[7:-4], 'SHF-'),
                 '{0}_perc_2080_all.png'.format(name))
-    
+    sys.exit() 
     # Plot 2
     # Lineplot with the 2 values
     
@@ -135,25 +135,25 @@ def barplot_perc_all(xdata, ydata1, ydata2, ydata1_future, ydata2_future,
   plt.plot([0,13],[0,0], color='k', linewidth=1)
     
   # Create blue bars
-  plt.bar(x1 - barWidth/3, ydata1, width = barWidth/3, color = 'royalblue', edgecolor = 'black', label=label1)
-  plt.bar(x1 - barWidth/1.5, ydata1_future, width = barWidth/3, color = 'royalblue', edgecolor = 'black', label=label1)
+  plt.bar(x1 - barWidth - barWidth/4, ydata1, width = barWidth/2, color = 'royalblue', edgecolor = 'black', label=label1)
+  plt.bar(x1 - barWidth/2 - barWidth/4, ydata1_future, width = barWidth/2, color = 'darkblue', edgecolor = 'black', label=label1_future)
 
     # Create cyan bars
-  plt.bar(x2, ydata2, width = barWidth/3, color = 'firebrick', edgecolor = 'black', label=label2)
-  plt.bar(x1 + barWidth/3, ydata2_future, width = barWidth/3, color = 'firebrick', edgecolor = 'black', label=label2)
+  plt.bar(x1 - barWidth/4, ydata2, width = barWidth/2, color = 'firebrick', edgecolor = 'black', label=label2)
+  plt.bar(x1 + barWidth/2 - barWidth/4, ydata2_future, width = barWidth/2, color = 'red', edgecolor = 'black', label=label2_future)
     
   plt.ylim(-15,100)        
   plt.xlim(0,13)
-  plt.xticks(xdata+barWidth/3, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], fontsize=20)    
+  plt.xticks(xdata - barWidth/2, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], fontsize=20)    
   plt.xlabel('Months', fontsize='20')
     
   ax1.set_yticks([], [])
   plt.legend(loc=1, fontsize=16)
     
   ax2 = fig.add_subplot(111, sharex=ax1, frameon=False, )
-  plt.bar(x1, ydata1_future-ydata1, width = barWidth/1.5, color = 'olivedrab', edgecolor = 'black', label=label1_future)
+  plt.bar(x1 - barWidth, ydata1_future-ydata1, width = barWidth, color = 'olivedrab', edgecolor = 'black', label=label1_future)
     
-  plt.bar(x2, ydata2_future-ydata2, width = barWidth/1.5, color = 'goldenrod', edgecolor = 'black', label=label2_future)
+  plt.bar(x1, ydata2_future-ydata2, width = barWidth, color = 'goldenrod', edgecolor = 'black', label=label2_future)
   plt.ylim(-15,100)
   plt.xlim(0,13)
   plt.setp(ax2.get_xticklabels(), visible=False)

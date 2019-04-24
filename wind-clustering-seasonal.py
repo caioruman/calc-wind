@@ -33,10 +33,12 @@ def main():
       lons.append(float(aa[5]))
       stnames.append(aa[1].replace(',',"_"))
 
-  datai = 1986
-  dataf = 2015
+  datai = 2040
+  dataf = 2069
 
-  percentage = open('percentage_seasonal_v3.txt', 'w')
+  main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_CanHisto_NOCTEM_RUN/CSV_RCP'
+
+  percentage = open('percentage_seasonal_v3_canesm2.txt', 'w')
   percentage.write("Station Neg Pos Neg1 Neg2 Pos1 Pos2\n")
 
   # looping throught all the stations
@@ -54,8 +56,8 @@ def main():
 
           # Open the .csv
           #filepaths_n.extend(glob('CSV/*{1}*_windpress_neg.csv'.format(month, year)))        
-          filepaths_n.extend(glob('CSV/*{2}_{1}{0:02d}_windpress_neg.csv'.format(month, year, name)))
-          filepaths_p.extend(glob('CSV/*{2}_{1}{0:02d}_windpress_pos.csv'.format(month, year, name)))
+          filepaths_n.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_neg.csv'.format(month, year, name, main_folder)))
+          filepaths_p.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_pos.csv'.format(month, year, name, main_folder)))
       #print(filepaths_n)
       #sys.exit()
               
@@ -162,7 +164,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
   y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
   y = calc_height(season, 1986, 2015, y)
   #x = np.arange(0,40,1)
-  x = np.arange(0,40,0.5)
+  x = np.arange(0,50,0.5)
   X, Y= np.meshgrid(x, y)
   vmin=0
   vmax=15
@@ -184,7 +186,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
     #CB.ax.tick_params(labelsize=20)
     plt.xlim(0,39)
     plt.ylim(min(y),max(y))
-    plt.xticks(np.arange(0,40,5), fontsize=20)
+    plt.xticks(np.arange(0,50,5), fontsize=20)
     plt.yticks(np.arange(0,2401,200), fontsize=20)
     plt.title('({0}) {1:2.2f} % {2}'.format(letter, perc[k], shf[k]), fontsize='20')
   
@@ -194,7 +196,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
   CB = plt.colorbar(CS, cax=cax, extend='both', ticks=v)  
   CB.ax.tick_params(labelsize=20)
   #plt.tight_layout()
-  plt.savefig('Images/{0}_{1}{2}_{3}_v3.png'.format(name, datai, dataf, period), bbox_inches='tight')
+  plt.savefig('Images/{0}_{1}{2}_{3}_2040-2069.png'.format(name, datai, dataf, period), bbox_inches='tight')
   plt.close()
   #sys.exit()
 
@@ -237,7 +239,7 @@ def calc_kerneldensity(df):
       kde_skl = KernelDensity(bandwidth=0.4)
       #aux = np.array(df_n['1000.0'])
       aux = np.copy(df[:,i])
-      aux_grid2 = np.linspace(0,40,80)
+      aux_grid2 = np.linspace(0,50,100)
       kde_skl.fit(aux[:, np.newaxis])
       log_pdf = kde_skl.score_samples(aux_grid2[:, np.newaxis])
       hist_aux.append(np.exp(log_pdf)*100)
@@ -247,7 +249,7 @@ def calc_kerneldensity(df):
 def calc_histogram(df):
 
   hist_l = []
-  bins = np.arange(0,40.25,1)
+  bins = np.arange(0,50.25,1)
   for i in range(0, df.shape[1]):    
     hist, bins = np.histogram(df[:,i], bins=bins)
     hist_l.append(hist*100/sum(hist))

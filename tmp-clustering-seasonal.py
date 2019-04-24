@@ -9,6 +9,8 @@ from os import listdir
 from glob import glob
 import cmocean
 
+from common_functions import interpPressure, calc_height
+
 '''
   - Read the wind data divided by positive and negative SHF values
   - Apply clustering analysis to each dataset to divide it between Unstable/Shear Driven and WSBL/VSBL
@@ -148,8 +150,8 @@ def main():
       perc.append(perc_p[k])
       perc.append(perc_p[j]) 
 
-      plot_wind_seasonal(centT, histoT, shf, datai, dataf, name, sname)
-
+      plot_wind_seasonal(centT, histoT, perc, shf, datai, dataf, name, sname, season)
+  #    sys.exit()
       #plot_wind(centroids_p[0], histo_p[0], perc_p[0], datai, dataf, name, "positive_type1", sname)
       #plot_wind(centroids_p[1], histo_p[1], perc_p[1], datai, dataf, name, "positive_type2", sname)
 
@@ -157,38 +159,12 @@ def main():
       
 
   percentage.close()
-            
-def plot_wind(centroids, histo, perc, datai, dataf, name, ptype, month):
 
-  y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
-  x = np.arange(0,40,1)
-  X, Y= np.meshgrid(x, y)
-  vmin=0
-  vmax=15
-  v = np.arange(vmin, vmax+1, 2)
-
-  fig = plt.figure(figsize=[14,8])
-  CS = plt.contourf(X, Y, histo, v, cmap='cmo.haline', extend='max')
-  CS.set_clim(vmin, vmax)
-  plt.gca().invert_yaxis()
-  plt.plot(centroids, y, color='white', marker='o', lw=4, markersize=10, markeredgecolor='k')
-  CB = plt.colorbar(CS, extend='both', ticks=v)
-  CB.ax.tick_params(labelsize=20)
-  plt.xlim(0,40)
-  plt.ylim(1000,700)
-  plt.xticks(np.arange(0,40,5), fontsize=20)
-  plt.yticks(y, fontsize=20)
-  plt.title('{0}:{1} - {2:2.2f}% - {3} - {4}'.format(datai, dataf, perc, name, month), fontsize='20')
-  plt.tight_layout()
-  plt.savefig('Images/{0}_{1}{2}_{3}_{4}.png'.format(name, datai, dataf, ptype, month), pad_inches=0.0, bbox_inches='tight')
-  plt.close()
-
-  return None
-
-def plot_wind_seasonal(centroids, histo, shf, datai, dataf, name, period):
+def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, season):
 
   y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
   #x = np.arange(0,40,1)
+  y = calc_height(season, 1986, 2015, y)
   x = np.arange(-50,20,1)
   X, Y= np.meshgrid(x, y)
   vmin=0
@@ -205,15 +181,25 @@ def plot_wind_seasonal(centroids, histo, shf, datai, dataf, name, period):
     CS.set_clim(vmin, vmax)
     plt.gca().invert_yaxis()
     plt.plot(centroids[k], y, color='white', marker='o', lw=4, markersize=10, markeredgecolor='k')
-    CB = plt.colorbar(CS, extend='both', ticks=v)
-    CB.ax.tick_params(labelsize=20)
+    #CB = plt.colorbar(CS, extend='both', ticks=v)
+    #CB.ax.tick_params(labelsize=20)
     plt.xlim(-50,20)
-    plt.ylim(1000,700)
+    #plt.ylim(1000,700)
     plt.xticks(np.arange(-50,20,5), fontsize=20)
-    plt.yticks(y, fontsize=20)
-    plt.title('({0}) {1}'.format(letter, shf[k]), fontsize='20')
-  plt.tight_layout()
-  plt.savefig('Images/{0}_{1}{2}_{3}_temperature.png'.format(name, datai, dataf, period), pad_inches=0.0, bbox_inches='tight')
+    #plt.yticks(y, fontsize=20)
+
+    #plt.xlim(0,39)
+    plt.ylim(min(y),max(y))
+    #plt.xticks(np.arange(0,40,5), fontsize=20)
+    plt.yticks(np.arange(0,2401,200), fontsize=20)
+    #plt.title('({0}) {1}'.format(letter, shf[k]), fontsize='20')
+    plt.title('({0}) {1:2.2f} % {2}'.format(letter, perc[k], shf[k]), fontsize='20')
+
+  cax = fig.add_axes([0.92, 0.1, 0.02, 0.8]) 
+  CB = plt.colorbar(CS, cax=cax, extend='both', ticks=v)  
+  CB.ax.tick_params(labelsize=20)
+  #plt.tight_layout()
+  plt.savefig('Images/{0}_{1}{2}_{3}_temperature_v2.png'.format(name, datai, dataf, period), pad_inches=0.0, bbox_inches='tight')
   plt.close()
 
   return None

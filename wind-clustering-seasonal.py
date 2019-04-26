@@ -37,6 +37,7 @@ def main():
   dataf = 2069
 
   main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_CanHisto_NOCTEM_RUN/CSV_RCP'
+  #main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_ERAINT_NOCTEM_RUN/CSV_RCP'
 
   percentage = open('percentage_seasonal_v3_canesm2.txt', 'w')
   percentage.write("Station Neg Pos Neg1 Neg2 Pos1 Pos2\n")
@@ -196,7 +197,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
   CB = plt.colorbar(CS, cax=cax, extend='both', ticks=v)  
   CB.ax.tick_params(labelsize=20)
   #plt.tight_layout()
-  plt.savefig('Images/{0}_{1}{2}_{3}_2040-2069.png'.format(name, datai, dataf, period), bbox_inches='tight')
+  plt.savefig('Images/{0}_{1}{2}_{3}.png'.format(name, datai, dataf, period), bbox_inches='tight')
   plt.close()
   #sys.exit()
 

@@ -44,7 +44,10 @@ def main():
   datai = args.datai
   dataf = args.dataf
 
-  txtfile = open('wind_density_data-{0}-{1}.dat'.format(datai,dataf), 'w')
+  R = 287.05 #Jkg-1K-1
+  press = np.array([700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0])*100
+
+  txtfile = open('wind_density_data-{0}-{1}_v2.dat'.format(datai,dataf), 'w')
   txtfile.write("station, month, type, perc_shf, perc_kmean, vmin, vmax, vmean, vstd, vrange, vskew, vkurtosis\n")
 
   # looping throught all the stations
@@ -56,6 +59,9 @@ def main():
       filepaths_n = []
       filepaths_p = []
 
+      filepaths_tmp_n = []
+      filepaths_tmp_p = []
+
       #for month in season:
       #  print(name, month)
         
@@ -65,24 +71,33 @@ def main():
         #filepaths_n.extend(glob('CSV/*{1}*_windpress_neg.csv'.format(month, year)))        
         filepaths_n.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_neg.csv'.format(month, year, name, main_folder)))
         filepaths_p.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_pos.csv'.format(month, year, name, main_folder)))
+
+        filepaths_tmp_n.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_neg.csv'.format(month, year, name, main_folder)))
+        filepaths_tmp_p.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_pos.csv'.format(month, year, name, main_folder)))
       #print(filepaths_n)
       #print('{3}/{1}/*{2}_{1}{0:02d}_windpress_neg.csv'.format(month, year, name, main_folder))
       #sys.exit()
 
       df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)
-      df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)      
+      df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)   
+
+      df_tmp_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_tmp_n), ignore_index=True)
+      df_tmp_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_tmp_p), ignore_index=True)         
 
       #[10.0, 15.0, 20.0, 30.0, 50.0, 70.0, 100.0, 150.0, 200.0, 250.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
       # Delete the upper levels of the atmosphere. I need only up to 700 hPa.
       df_n = df_n.drop(columns=['300.0', '400.0', '500.0', '600.0'])
       df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0'])
 
+      df_tmp_n = df_tmp_n.drop(columns=['300.0', '400.0', '500.0', '600.0', 'SurfTemp', 'T2M', 'UV'])
+      df_tmp_p = df_tmp_p.drop(columns=['300.0', '400.0', '500.0', '600.0', 'SurfTemp', 'T2M', 'UV'])   
+
       p_neg = len(df_n.index)*100/(len(df_n.index) + len(df_p.index))
       p_pos = len(df_p.index)*100/(len(df_n.index) + len(df_p.index))
 
       # Clustering analysis for Negative Values
-      centroids_n, histo_n, perc_n, df_km_n = kmeans_probability(df_n)      
-      
+      centroids_n, histo_n, perc_n, df_km_n, df_tmp_n = kmeans_probability(df_n, df_tmp_n)     
+
       perc = []
       w_data = []
       w_density = []
@@ -97,27 +112,33 @@ def main():
       w_data_0 = interpPressure(m_height, wheight, df_km_n[0])
       w_data_1 = interpPressure(m_height, wheight, df_km_n[1])
 
+      pho_data_0 = interpPressure(m_height, wheight, press/(R*(df_tmp_n[0]+273.15)))
+      pho_data_1 = interpPressure(m_height, wheight, press/(R*(df_tmp_n[1]+273.15)))
+
       #print(calc_vars(w_data_0))
       #print(calc_vars(w_data_1))
 
       # Wind Energy Density (W/m2) for the data      
-      w_density.append(calc_wind_density(w_data_0, wheight))
-      w_density.append(calc_wind_density(w_data_1, wheight))
+      w_density.append(calc_wind_density(w_data_0, pho_data_0))
+      w_density.append(calc_wind_density(w_data_1, pho_data_1))
 
       # Now doing the same thing to the SHF+ data
 
-      centroids_p, histo_p, perc_p, df_km_p = kmeans_probability(df_p)
+      centroids_p, histo_p, perc_p, df_km_p, df_tmp_p = kmeans_probability(df_p, df_tmp_p)
 
       perc.append(perc_p[0])
       perc.append(perc_p[1])    
 
       #Interpolating the data to wheight (default: 80m)      
       w_data_0 = interpPressure(m_height, wheight, df_km_p[0])
-      w_data_1 = interpPressure(m_height, wheight, df_km_p[1])      
+      w_data_1 = interpPressure(m_height, wheight, df_km_p[1])  
+
+      pho_data_0 = interpPressure(m_height, wheight, press/(R*(df_tmp_p[0]+273.15)))
+      pho_data_1 = interpPressure(m_height, wheight, press/(R*(df_tmp_p[1]+273.15)))  
 
       # Wind Energy Density (W/m2) for the data      
-      w_density.append(calc_wind_density(w_data_0, wheight))
-      w_density.append(calc_wind_density(w_data_1, wheight))
+      w_density.append(calc_wind_density(w_data_0, pho_data_0))
+      w_density.append(calc_wind_density(w_data_1, pho_data_1))
 
       #Calculate variables
       i = 0
@@ -190,7 +211,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period):
 
   return None
 
-def kmeans_probability(df):
+def kmeans_probability(df, df_tmp):
   '''
     For now fixed at 2 clusters
 
@@ -204,10 +225,14 @@ def kmeans_probability(df):
 
   # Converting to numpy array
   df_a = np.array(df)
+  df_b = np.array(df_tmp)
 
   # Dividing between the 2 clusters
   df_0 = df_a[labels,:]
   df_1 = df_a[~labels,:]
+
+  df_tmp_0 = df_b[labels,:]
+  df_tmp_1 = df_b[~labels,:]
 
   # Getting the probability distribution. Bins of 0.5 m/s
   hist_0 = calc_histogram(df_0)
@@ -220,7 +245,7 @@ def kmeans_probability(df):
   #print(np.mean(df_0, axis=0), np.mean(df_1, axis=0), kmeans.cluster_centers_)
   #sys.exit()
 
-  return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]], [df_0, df_1]
+  return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]], [df_0, df_1], [df_tmp_0, df_tmp_1]
 
 
     

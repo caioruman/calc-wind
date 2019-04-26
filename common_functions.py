@@ -65,11 +65,11 @@ def calc_histogram(df, bins1=0, bins2=40.25, inc=1):
 
   return np.array(hist_l)
 
-def calc_wind_density(wind, m_height):
+def calc_wind_density(wind, pho):
   '''
     Calculating for 
   '''
-  pho = 1.225 - (1.194*10**(-4))*m_height
+  #pho = 1.225 - (1.194*10**(-4))*m_height
   wpe = pho*np.power(wind, 3)/2
 
   return wpe

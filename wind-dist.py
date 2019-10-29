@@ -30,12 +30,17 @@ def main():
 
   exp = "PanArctic_0.5d_ERAINT_NOCTEM_RUN"
   exp = "PanArctic_0.5d_CanHisto_NOCTEM_RUN"
+  exp = "cAYNWT_004deg_900x800_clef"
+  exp = "cPanCan011_675x540_SPN"
   main_folder = "/pixel/project01/cruman/ModelData/{0}".format(exp)
   folder = "/home/cruman/Scripts/calc-wind"
-  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
+#  Cedar
+#  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
+#  Beluga
+  main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
 
-  datai = 2053
-  dataf = 2069
+  datai = 2000
+  dataf = 2015
 
   # to be put in a loop later. 
   for year in range(datai, dataf+1):

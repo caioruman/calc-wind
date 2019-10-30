@@ -149,8 +149,8 @@ def main():
             data_vv_press = np.vstack( (data_vv_press, vv_press) )
             data_uv_press = np.vstack( (data_uv_press, np.sqrt(np.power(uu_press, 2) + np.power(vv_press, 2))) )
             data_tt_press = np.vstack( (data_tt_press, tt_press) )
-      print(data_uu_press.shape) # output: 248, 22, 635, 500
-      sys.exit()
+      #print(data_uu_press.shape) # output: 248, 22, 635, 500
+      #sys.exit()
 
 #      print(tt_press.shape, uu_press.shape, vv_press.shape)
 
@@ -212,55 +212,6 @@ def main():
         df1.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_neg.csv".format(folder, name, year, month, year))
         df2.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_pos.csv".format(folder, name, year, month, year))
   #      sys.exit()
-
-
-
-def save_netcdf(fname, vars, datefield, lat, lon, nx, ny, tempo):
-            
-    data_tipo = "hours"
-
-    # Precisa mudar para utilizar o caminho completo
-    ncfile = Dataset('{0}'.format(fname), 'w')
-    #varcontent.shape = (nlats, nlons)
-
-    # Crio as dimensoes latitude, longitude e tempo
-    ncfile.createDimension('x', nx)
-    ncfile.createDimension('y', ny)
-    ncfile.createDimension('time', tempo)
-
-    # Crio as variaveis latitude, longitude e tempo
-    # createVariable( NOMEVAR, TIPOVAR, DIMENSOES )
-    lats_nc = ncfile.createVariable('lat', np.dtype("float32").char, ('y','x'))
-    lons_nc = ncfile.createVariable('lon', np.dtype("float32").char, ('y','x'))
-    time = ncfile.createVariable('time', np.dtype("float32").char, ('time',))
-
-    # Unidades
-    lats_nc.units = 'degrees_north'
-    lats_nc._CoordinateAxisType = "Lat"
-    lons_nc.units = 'degrees_east'
-    lons_nc._CoordinateAxisType = "Lon"
-    time.units = '{1} since {0}'.format(datefield.strftime('%Y-%m-%d %H:%M'), data_tipo)
-
-    #Writing lat and lon
-    lats_nc[:] = lat
-    lons_nc[:] = lon
-
-    # write data to variables along record (unlimited) dimension.
-    # same data is written for each record.
-    for var in vars:
-
-        var_nc = ncfile.createVariable(var[0], np.dtype('float32').char, ('time', 'y', 'x'))
-        var_nc.units = "some unit"
-        var_nc.coordinates = "lat lon"
-        var_nc.grid_desc = "rotated_pole"
-        var_nc.cell_methods = "time: point"
-        var_nc.missing_value = np.nan
-        var_nc[:,:,:] = var[1]
-
-    # close the file.
-    ncfile.close()
-
-
 
 
 def geo_idx(dd, dd_array, type="lat"):

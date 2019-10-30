@@ -27,17 +27,16 @@ import time
 '''
 
 def main():
-
-  exp = "PanArctic_0.5d_ERAINT_NOCTEM_RUN"
-  exp = "PanArctic_0.5d_CanHisto_NOCTEM_RUN"
+  
   exp = "cAYNWT_004deg_900x800_clef"
   exp = "cPanCan011_675x540_SPN"
 
   exp2 = "PanCanada4km"
   exp2 = "PanCanada10km"
+
   main_folder = "/pixel/project01/cruman/ModelData/{0}".format(exp)
-  folder = "/home/cruman/Scripts/calc-wind"
-  folder = "/home/cruman/Documents/Scripts/calc-wind"
+  
+  folder = "./calc-wind"
 #  Cedar
 #  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
 #  Beluga

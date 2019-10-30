@@ -1,8 +1,8 @@
 #;70133;70133__Kotzebue,_Ralph_Wien,_AK_PAOT;latitude;66.86;longitude;-162.63
 #;70200;70200__Nome,_AK_PAOM;latitude;64.50;longitude;-165.42
 #;70219;70219__Bethel_Bethel_Airport,_AK_PABE;latitude;60.78;longitude;-161.80
-70261;70261__Fairbanks_Int,_AK_PAFA;latitude;64.81;longitude;-147.86
-70273;70273__Anchorage_Int,_AK_PANC;latitude;61.16;longitude;-150.01
+#;70261;70261__Fairbanks_Int,_AK_PAFA;latitude;64.81;longitude;-147.86
+#;70273;70273__Anchorage_Int,_AK_PANC;latitude;61.16;longitude;-150.01
 #;70308;70308__St._Paul,_AK_PASN;latitude;57.15;longitude;-170.21
 #;70316;70316__Cold_Bay,_AK_PACD;latitude;55.20;longitude;-162.71
 #;70326;70326__King_Salmon,_AK_PAKN;latitude;58.68;longitude;-156.65
@@ -22,12 +22,12 @@
 #l71906;71906__Kuujjuaq,_QB_YVP;latitude;58.11;longitude;-68.41
 #;71907;71907__Inukjuak,_QB_WPH;latitude;58.45;longitude;-78.11
 #;71913;71913__Churchill,_MB_YYQ;latitude;58.73;longitude;-94.08
-71917;71917__Eureka,_NT_WEU;latitude;79.98;longitude;-85.93
+#;71917;71917__Eureka,_NT_WEU;latitude;79.98;longitude;-85.93
 71925;71925__Cambridge_Bay,_NT_YCB;latitude;69.12;longitude;-105.05
 71926;71926__Baker_Lake,_NT_YBK;latitude;64.30;longitude;-96.00
 71934;71934__Fort_Smith,_NT_YSM;latitude;60.02;longitude;-111.93
-71945;71945__Fort_Nelson,_BC_YYE;latitude;58.83;longitude;-122.59
-71957;71957__Inuvik,_NT_YEV;latitude;68.30;longitude;-133.52
+#;71945;71945__Fort_Nelson,_BC_YYE;latitude;58.83;longitude;-122.59
+#;71957;71957__Inuvik,_NT_YEV;latitude;68.30;longitude;-133.52
 #;72797;72797__Quillayute,_WA_UIL;latitude;47.95;longitude;-124.55
 #;00000;00000_Iqaluit_NU;latitude;63.747;longitude;-68.52
 00000;00000_Sachs_Harbour;latitude;71.986;longitude;-125.237

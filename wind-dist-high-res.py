@@ -205,8 +205,8 @@ def main(exp):
         df1 = pd.DataFrame(data=neg_wind_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_wind_press, columns=levels[10:])
 
-        df1.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp))
-        df2.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp))
+        df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp))
+        df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp))
 
         df1 = pd.DataFrame(data=neg_tt_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_tt_press, columns=levels[10:])
@@ -219,8 +219,8 @@ def main(exp):
         df2 = df2.assign(T2M=pos_t2m)
         df2 = df2.assign(UV=pos_wind)
 
-        df1.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_neg.csv".format(folder, name, year, month, year, exp))
-        df2.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_pos.csv".format(folder, name, year, month, year, exp))
+        df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_neg.csv".format(folder, name, year, month, year, exp))
+        df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_pos.csv".format(folder, name, year, month, year, exp))
   #      sys.exit()
 
 

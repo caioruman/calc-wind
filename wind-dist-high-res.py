@@ -33,8 +33,8 @@ parser.add_argument("exp", type=str, help="Ano", default=0)
 args=parser.parse_args()
 
 exp = args.exp
-print(exp)
-sys.exit()
+#print(exp)
+#sys.exit()
 
 def main(exp):
   

@@ -4,6 +4,7 @@ import sys
 from scipy import stats
 import matplotlib.pyplot as plt
 import os
+import argparse
 
 from datetime import date, datetime, timedelta
 
@@ -26,29 +27,38 @@ import time
   - K-mean clustering of those two timeseries
 '''
 
-def main():
-  
-  exp = "cAYNWT_004deg_900x800_clef"
-  exp = "cPanCan011_675x540_SPN"
+parser=argparse.ArgumentParser(description='Separates the wind profiles based on SHF', formatter_class=argparse.RawTextHelpFormatter)
+#parser.add_argument("-op", "--opt-arg", type=str, dest='opcional', help="Algum argumento opcional no programa", default=False)
+parser.add_argument("exp", type=str, help="Ano", default=0)
+args=parser.parse_args()
 
-  exp2 = "PanCanada4km"
-  exp2 = "PanCanada10km"
+exp = args.exp
+print(exp)
+sys.exit()
+
+def main(exp):
+  
+#  exp = "cAYNWT_004deg_900x800_clef"
+#  exp = "cPanCan011_675x540_SPN"
+
+  #exp2 = "PanCanada4km"
+  #exp2 = "PanCanada10km"
 
   main_folder = "/pixel/project01/cruman/ModelData/{0}".format(exp)
   
-  folder = "./calc-wind"
+  folder = "/home/cruman/Documents/Scripts/calc-wind"
 #  Cedar
 #  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
 #  Beluga
   main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
-  folder_nc = "/home/cruman/projects/rrg-sushama-ab/cruman/Simulations/{0}".format(exp2)
+  #folder_nc = "/home/cruman/projects/rrg-sushama-ab/cruman/Simulations/{0}".format(exp2)
 
   datai = 1990
   dataf = 2010
 
   # to be put in a loop later. 
   for year in range(datai, dataf+1):
-    os.system('mkdir -p CSV_RCP/{0}'.format(year))
+    os.system('mkdir -p CSV_RCP/{0}/{1}'.format(exp, year))
 
     for month in range(1,13):
   #year = 1980
@@ -195,8 +205,8 @@ def main():
         df1 = pd.DataFrame(data=neg_wind_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_wind_press, columns=levels[10:])
 
-        df1.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year))
-        df2.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_pos.csv".format(folder, name, year, month, year))
+        df1.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp))
+        df2.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp))
 
         df1 = pd.DataFrame(data=neg_tt_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_tt_press, columns=levels[10:])
@@ -209,8 +219,8 @@ def main():
         df2 = df2.assign(T2M=pos_t2m)
         df2 = df2.assign(UV=pos_wind)
 
-        df1.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_neg.csv".format(folder, name, year, month, year))
-        df2.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_pos.csv".format(folder, name, year, month, year))
+        df1.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_neg.csv".format(folder, name, year, month, year, exp))
+        df2.to_csv("{5}/{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_pos.csv".format(folder, name, year, month, year, exp))
   #      sys.exit()
 
 
@@ -240,4 +250,4 @@ def geo_idx(dd, dd_array, type="lat"):
 
 
 if __name__ == "__main__":
-  main()
+  main(exp)

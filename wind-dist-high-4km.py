@@ -86,18 +86,18 @@ def main(exp):
           shf = shf[:,4,:,:]
           #print(shf.shape)
           #sys.exit()
-          surf_temp = np.squeeze(r.variables["J8"][:]) - 273.15
+          #surf_temp = np.squeeze(r.variables["J8"][:]) - 273.15
 
           lons2d, lats2d = r.get_longitudes_and_latitudes_for_the_last_read_rec()  
           if ini:
               # Reading for the first time
               data_shf = shf
-              data_surf_temp = surf_temp
+              #data_surf_temp = surf_temp
               ini = False
           else:
               # Stacking the arrays
               data_shf = np.vstack( (data_shf, shf) )
-              data_surf_temp = np.vstack( (data_surf_temp, surf_temp) )
+              #data_surf_temp = np.vstack( (data_surf_temp, surf_temp) )
       
       
 #      print(shf.shape, surf_temp.shape)
@@ -196,8 +196,8 @@ def main(exp):
         neg_t2m = data_t2m[neg_shf, i, j]
         pos_t2m = data_t2m[~neg_shf, i, j]
 
-        neg_stemp = data_surf_temp[neg_shf, i, j]
-        pos_stemp = data_surf_temp[~neg_shf, i, j]
+        #neg_stemp = data_surf_temp[neg_shf, i, j]
+        #pos_stemp = data_surf_temp[~neg_shf, i, j]
 
         neg_wind_press = data_uv_press[neg_shf, 10:, i, j]
         pos_wind_press = data_uv_press[~neg_shf, 10:, i, j]
@@ -214,11 +214,11 @@ def main(exp):
         df1 = pd.DataFrame(data=neg_tt_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_tt_press, columns=levels[10:])
 
-        df1 = df1.assign(SurfTemp=neg_stemp)
+        #df1 = df1.assign(SurfTemp=neg_stemp)
         df1 = df1.assign(T2M=neg_t2m)
         df1 = df1.assign(UV=neg_wind)
 
-        df2 = df2.assign(SurfTemp=pos_stemp)
+        #df2 = df2.assign(SurfTemp=pos_stemp)
         df2 = df2.assign(T2M=pos_t2m)
         df2 = df2.assign(UV=pos_wind)
 

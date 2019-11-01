@@ -53,7 +53,7 @@ def main(exp):
   main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
   #folder_nc = "/home/cruman/projects/rrg-sushama-ab/cruman/Simulations/{0}".format(exp2)
 
-  datai = 1995
+  datai = 1990
   dataf = 2010
 
   # to be put in a loop later. 
@@ -82,7 +82,9 @@ def main(exp):
 
         with RPN(arq) as r:
           print("Opening file {0}".format(arq))
-          shf = np.squeeze(r.variables["AH"][:])
+          shf = np.squeeze(r.variables["AHF"][:])
+          print(shf.shape)
+          sys.exit()
           surf_temp = np.squeeze(r.variables["J8"][:]) - 273.15
 
           lons2d, lats2d = r.get_longitudes_and_latitudes_for_the_last_read_rec()  

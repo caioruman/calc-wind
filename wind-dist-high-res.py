@@ -53,7 +53,7 @@ def main(exp):
   main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
   #folder_nc = "/home/cruman/projects/rrg-sushama-ab/cruman/Simulations/{0}".format(exp2)
 
-  datai = 1990
+  datai = 1995
   dataf = 2010
 
   # to be put in a loop later. 

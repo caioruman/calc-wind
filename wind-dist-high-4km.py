@@ -53,7 +53,7 @@ def main(exp):
   main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
   #folder_nc = "/home/cruman/projects/rrg-sushama-ab/cruman/Simulations/{0}".format(exp2)
 
-  datai = 1990
+  datai = 1991
   dataf = 2010
 
   # to be put in a loop later. 
@@ -70,7 +70,17 @@ def main(exp):
 
     #  sp_lat = 47.391348
     #  sp_lon = -61.850658
+      print(year, month, " ")
 
+      # Check if the file exists. if yes, jump to the next month      
+      # first station on the station.txt file: 71925__Cambridge_Bay__NT_YCB_199101_windpress_pos.csv
+      name = "71925__Cambridge_Bay__NT_YCB"
+      if os.path.exists("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp)):
+        print("Month already calculated. skipping.")
+        continue
+
+      print("left the loop")
+      sys.exit()
       # I'll need to loop throught all the dm/pm/dp files, read them and concatenate in one array before processing
       arq_dp = sorted(glob("{0}/Samples/{1}_{2}{3:02d}/dp*".format(main_folder, exp, year, month)))
       arq_dm = sorted(glob("{0}/Samples/{1}_{2}{3:02d}/dm*".format(main_folder, exp, year, month)))

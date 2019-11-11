@@ -79,8 +79,8 @@ def main(exp):
         print("Month already calculated. skipping.")
         continue
 
-      print("left the loop")
-      sys.exit()
+      #print("left the loop")
+      #sys.exit()
       # I'll need to loop throught all the dm/pm/dp files, read them and concatenate in one array before processing
       arq_dp = sorted(glob("{0}/Samples/{1}_{2}{3:02d}/dp*".format(main_folder, exp, year, month)))
       arq_dm = sorted(glob("{0}/Samples/{1}_{2}{3:02d}/dm*".format(main_folder, exp, year, month)))

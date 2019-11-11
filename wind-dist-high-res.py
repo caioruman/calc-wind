@@ -39,7 +39,7 @@ exp = args.exp
 def main(exp):
   
 #  exp = "cAYNWT_004deg_900x800_clef"
-#  exp = "cPanCan011_675x540_SPN"
+  exp = "cPanCan011_675x540_SPN"
 
   #exp2 = "PanCanada4km"
   #exp2 = "PanCanada10km"

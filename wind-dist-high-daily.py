@@ -75,14 +75,7 @@ def main(exp):
 
     #  sp_lat = 47.391348
     #  sp_lon = -61.850658
-      print(year, month, " ")
-
-      # Check if the file exists. if yes, jump to the next month      
-      # first station on the station.txt file: 71925__Cambridge_Bay__NT_YCB_199101_windpress_pos.csv
-      name = "71925__Cambridge_Bay__NT_YCB"
-      if os.path.exists("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp)):
-        print("Month already calculated. skipping.")
-        continue
+      print(year, month, " ")      
 
       #print("left the loop")
       #sys.exit()
@@ -96,6 +89,14 @@ def main(exp):
       i = 0
       for arqpm, arqdm, arqdp in zip(arq_pm, arq_dm, arq_dp):
         i += 1
+
+        # Check if the file exists. if yes, jump to the next month      
+        # first station on the station.txt file: 71925__Cambridge_Bay__NT_YCB_199101_windpress_pos.csv
+        name = "71925__Cambridge_Bay__NT_YCB"
+        if os.path.exists("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, i)):
+          print("Month already calculated. skipping.")
+          continue
+        
         with RPN(arqpm) as r:
           print("Opening file {0}".format(arqpm))
           shf = np.squeeze(r.variables["AHF"][:])

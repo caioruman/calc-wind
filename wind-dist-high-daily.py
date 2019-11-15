@@ -93,15 +93,17 @@ def main(exp):
 
       # Reading SHF
       ini = True
-      i = 0
+      mm = 0
       for arqpm, arqdm, arqdp in zip(arq_pm, arq_dm, arq_dp):
-        i += 1
+        mm += 1
+        print(mm)
 
         # Check if the file exists. if yes, jump to the next month      
         # first station on the station.txt file: 71925__Cambridge_Bay__NT_YCB_199101_windpress_pos.csv
         name = "71925__Cambridge_Bay__NT_YCB"
-        if os.path.exists("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, i)):
+        if os.path.exists("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm)):
           print("Day already calculated. skipping.")
+          print(year, month, i)
           continue
 
         with RPN(arqpm) as r:
@@ -195,8 +197,8 @@ def main(exp):
           df1 = pd.DataFrame(data=neg_wind_press, columns=levels[10:])
           df2 = pd.DataFrame(data=pos_wind_press, columns=levels[10:])
 
-          df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, i))
-          df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp, i))
+          df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm))
+          df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp, mm))
 
           df1 = pd.DataFrame(data=neg_tt_press, columns=levels[10:])
           df2 = pd.DataFrame(data=pos_tt_press, columns=levels[10:])
@@ -209,8 +211,8 @@ def main(exp):
           df2 = df2.assign(T2M=pos_t2m)
           df2 = df2.assign(UV=pos_wind)
 
-          df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_neg.csv".format(folder, name, year, month, year, exp, i))
-          df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_pos.csv".format(folder, name, year, month, year, exp, i))
+          df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_neg.csv".format(folder, name, year, month, year, exp, mm))
+          df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_pos.csv".format(folder, name, year, month, year, exp, mm))
   #      sys.exit()
 
 

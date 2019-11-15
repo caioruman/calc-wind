@@ -29,12 +29,15 @@ import time
 
 parser=argparse.ArgumentParser(description='Separates the wind profiles based on SHF', formatter_class=argparse.RawTextHelpFormatter)
 #parser.add_argument("-op", "--opt-arg", type=str, dest='opcional', help="Algum argumento opcional no programa", default=False)
-parser.add_argument("exp", type=str, help="Ano", default=0)
+parser.add_argument("anoi", type=int, help="Ano", default=0)
+parser.add_argument("anof", type=int, help="Anof", default=0)
 args=parser.parse_args()
 
-exp = args.exp
+datai = args.anoi
+dataf = args.anof
 #print(exp)
 #sys.exit()
+exp = "cAYNWT_004deg_900x800_clef"
 
 def main(exp):
   
@@ -53,8 +56,10 @@ def main(exp):
   main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
   #folder_nc = "/home/cruman/projects/rrg-sushama-ab/cruman/Simulations/{0}".format(exp2)
 
-  datai = 1991
-  dataf = 2010
+#  datai = 1991
+#  dataf = 2010
+#  print(datai, dataf)
+#  sys.exit()
 
   # to be put in a loop later. 
   for year in range(datai, dataf+1):

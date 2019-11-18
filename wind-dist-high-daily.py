@@ -31,18 +31,21 @@ parser=argparse.ArgumentParser(description='Separates the wind profiles based on
 #parser.add_argument("-op", "--opt-arg", type=str, dest='opcional', help="Algum argumento opcional no programa", default=False)
 parser.add_argument("anoi", type=int, help="Ano", default=0)
 parser.add_argument("anof", type=int, help="Anof", default=0)
+parser.add_argument("exp", type=str, help="exp", default=0)
 args=parser.parse_args()
 
 datai = args.anoi
 dataf = args.anof
+exp = args.exp
 #print(exp)
 #sys.exit()
-exp = "cAYNWT_004deg_900x800_clef"
+#exp = "cAYNWT_004deg_900x800_clef"
+#exp = "cPanCan011_675x540_SPN"
 
 def main(exp):
   
-  exp = "cAYNWT_004deg_900x800_clef"
-#  exp = "cPanCan011_675x540_SPN"
+  #exp = "cAYNWT_004deg_900x800_clef"
+  #exp = "cPanCan011_675x540_SPN"
 
   #exp2 = "PanCanada4km"
   #exp2 = "PanCanada10km"
@@ -63,7 +66,7 @@ def main(exp):
 
   # to be put in a loop later. 
   for year in range(datai, dataf+1):
-    os.system('mkdir -p CSV_RCP/{0}/{1}'.format(exp, year))
+    os.system('mkdir -p CSV/{0}/{1}'.format(exp, year))
 
     for month in range(1,13):
   #year = 1980
@@ -76,7 +79,7 @@ def main(exp):
       # Check if the file exists. if yes, jump to the next month      
       # first station on the station.txt file: 71925__Cambridge_Bay__NT_YCB_199101_windpress_pos.csv
       name = "71925__Cambridge_Bay__NT_YCB"
-      if os.path.exists("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp)):
+      if os.path.exists("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp)):
         print("Month already calculated. skipping.")
         continue
 
@@ -101,15 +104,18 @@ def main(exp):
         # Check if the file exists. if yes, jump to the next month      
         # first station on the station.txt file: 71925__Cambridge_Bay__NT_YCB_199101_windpress_pos.csv
         name = "71925__Cambridge_Bay__NT_YCB"
-        if os.path.exists("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm)):
+        if os.path.exists("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm)):
           print("Day already calculated. skipping.")
           print(year, month, i)
           continue
 
         with RPN(arqpm) as r:
           print("Opening file {0}".format(arqpm))
-          shf = np.squeeze(r.variables["AHF"][:])
-          shf = shf[:,4,:,:]
+          if exp == "cPanCan011_675x540_SPN":
+            shf = np.squeeze(r.variables["AH"][:])
+          else:
+            shf = np.squeeze(r.variables["AHF"][:])
+            shf = shf[:,4,:,:]
           #print(shf.shape)
           #sys.exit()
           #surf_temp = np.squeeze(r.variables["J8"][:]) - 273.15
@@ -157,6 +163,8 @@ def main(exp):
           data_vv_press = vv_press
           data_uv_press = np.sqrt(np.power(uu_press, 2) + np.power(vv_press, 2))
           data_tt_press = tt_press
+
+          dates_d = np.array(r.variables["UU"].sorted_dates)
           
         lats = []
         lons = []
@@ -194,11 +202,17 @@ def main(exp):
           neg_tt_press = data_tt_press[neg_shf, 10:, i, j]
           pos_tt_press = data_tt_press[~neg_shf, 10:, i, j]
 
-          df1 = pd.DataFrame(data=neg_wind_press, columns=levels[10:])
-          df2 = pd.DataFrame(data=pos_wind_press, columns=levels[10:])
+          neg_dates_d = dates_d[neg_shf]
+          pos_dates_d = dates_d[~neg_shf]
 
-          df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm))
-          df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp, mm))
+          df1 = pd.DataFrame(data=neg_wind_press, columns=levels[10:])
+          df2 = pd.DataFrame(data=pos_wind_press, columns=levels[10:])    
+
+          df1 = df1.assign(Dates=neg_dates_d)
+          df2 = df2.assign(Dates=pos_dates_d)      
+
+          df1.to_csv("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm))
+          df2.to_csv("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp, mm))
 
           df1 = pd.DataFrame(data=neg_tt_press, columns=levels[10:])
           df2 = pd.DataFrame(data=pos_tt_press, columns=levels[10:])
@@ -211,8 +225,11 @@ def main(exp):
           df2 = df2.assign(T2M=pos_t2m)
           df2 = df2.assign(UV=pos_wind)
 
-          df1.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_neg.csv".format(folder, name, year, month, year, exp, mm))
-          df2.to_csv("{0}/CSV_RCP/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_pos.csv".format(folder, name, year, month, year, exp, mm))
+          df1 = df1.assign(Dates=neg_dates_d)
+          df2 = df2.assign(Dates=pos_dates_d)
+
+          df1.to_csv("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_neg.csv".format(folder, name, year, month, year, exp, mm))
+          df2.to_csv("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_pos.csv".format(folder, name, year, month, year, exp, mm))
   #      sys.exit()
 
 

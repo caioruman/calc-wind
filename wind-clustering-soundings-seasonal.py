@@ -36,15 +36,18 @@ def main():
       stnames.append(aa[1])
       sheights.append(float(aa[7]))
 
-  datai = 1986
-  dataf = 2015
+  datai = 1990
+  dataf = 2010
 
   read_s = False
 
+  exp = 'cPanCan011_675x540_SPN'
+
   #main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_CanHisto_NOCTEM_RUN/CSV_RCP'
   main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_ERAINT_NOCTEM_RUN/CSV_V2'
+  main_folder = '/pixel/project01/cruman/ModelData/{0}/CSV'.format(exp)
 
-  percentage = open('DatFiles/percentage_seasonal_soundings.txt', 'w')
+  percentage = open('DatFiles/percentage_seasonal_soundings_{0}.txt'.format(exp), 'w')
   percentage.write("Station Neg Pos Neg1 Neg2 Pos1 Pos2\n")
 
   # looping throught all the stations
@@ -64,8 +67,8 @@ def main():
 
           # Open the .csv
           #filepaths_n.extend(glob('CSV/*{1}*_windpress_neg.csv'.format(month, year)))        
-          filepaths_n.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_neg.csv'.format(month, year, name.replace(',',"_"), main_folder)))
-          filepaths_p.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))      
+          filepaths_n.extend(glob('{3}/{1}/*{2}_{1}{0:02d}*_windpress_neg.csv'.format(month, year, name.replace(',',"_"), main_folder)))
+          filepaths_p.extend(glob('{3}/{1}/*{2}_{1}{0:02d}*_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))      
               
       df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)
       df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)      

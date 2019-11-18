@@ -102,6 +102,8 @@ def main():
 
         levels = [lev for lev in r.variables["UU"].sorted_levels]
 
+        dates_d = np.array(r.variables["UU"].sorted_dates)
+
       print(tt_press.shape, uu_press.shape, vv_press.shape)
 
       uv_pressure = np.sqrt(np.power(uu_press, 2) + np.power(vv_press, 2))    
@@ -142,8 +144,14 @@ def main():
         neg_tt_press = tt_press[neg_shf, 10:, i, j]
         pos_tt_press = tt_press[~neg_shf, 10:, i, j]
 
+        neg_dates_d = dates_d[neg_shf]
+        pos_dates_d = dates_d[~neg_shf]
+
         df1 = pd.DataFrame(data=neg_wind_press, columns=levels[10:])
         df2 = pd.DataFrame(data=pos_wind_press, columns=levels[10:])
+
+        df1 = df1.assign(Dates=neg_dates_d)
+        df2 = df2.assign(Dates=pos_dates_d)
 
         df1.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year))
         df2.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_pos.csv".format(folder, name, year, month, year))
@@ -158,6 +166,9 @@ def main():
         df2 = df2.assign(SurfTemp=pos_stemp)
         df2 = df2.assign(T2M=pos_t2m)
         df2 = df2.assign(UV=pos_wind)
+
+        df1 = df1.assign(Dates=neg_dates_d)
+        df2 = df2.assign(Dates=pos_dates_d)
 
         df1.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_neg.csv".format(folder, name, year, month, year))
         df2.to_csv("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_pos.csv".format(folder, name, year, month, year))

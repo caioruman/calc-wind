@@ -106,7 +106,7 @@ def main(exp):
         name = "71925__Cambridge_Bay__NT_YCB"
         if os.path.exists("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm)):
           print("Day already calculated. skipping.")
-          print(year, month, i)
+          print(year, month, mm)
           continue
 
         with RPN(arqpm) as r:

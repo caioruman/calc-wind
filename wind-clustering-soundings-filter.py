@@ -12,6 +12,7 @@ import cmocean
 import tarfile
 import os
 import re
+import shutil
 
 from common_functions import interpPressure, calc_height
 
@@ -66,12 +67,12 @@ def main():
         
         for year in range(datai, dataf+1):
           
-          reT = re.compile(r'.*?{0}_.*?{1}{2:02d}_.*?_.*?'.format(name.replace(',',"_"), year, month))
+          reT = re.compile(r'.*?{0}_.*?{1}{2:02d}_.*?_windpress.*?'.format(name.replace(',',"_"), year, month))
           
           #os.mkdir('{0}/outdir'.format(main_folder))
           t = tarfile.open('{0}/{1}.tar.gz'.format(main_folder, year), 'r')
           t.extractall('{0}/outdir'.format(main_folder), members=[m for m in t.getmembers() if reT.search(m.name)])          
-          sys.exit()
+          #sys.exit()
           #print("{2}_{1}{0:02d}_windpress".format(month, year, name.replace(',',"_")))
           #for member in t.getmembers():            
             #if "{2}_{1}{0:02d}_*_windpress".format(month, year, name.replace(',',"_")) in member.name:

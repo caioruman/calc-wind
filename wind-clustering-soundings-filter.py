@@ -81,9 +81,10 @@ def main():
           #print os.listdir('outdir')
           # Open the .csv
           #filepaths_n.extend(glob('CSV/*{1}*_windpress_neg.csv'.format(month, year)))        
-          filepaths_n.extend(glob('{3}outdir/{1}/*{2}_{1}{0:02d}_*_windpress_neg.csv'.format(month, year, name.replace(',',"_"), main_folder)))
-          filepaths_p.extend(glob('{3}outdir/{1}/*{2}_{1}{0:02d}_*_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))      
+          filepaths_n.extend(glob('{3}/outdir/{1}/*{2}_{1}{0:02d}_*_windpress_neg.csv'.format(month, year, name.replace(',',"_"), main_folder)))
+          filepaths_p.extend(glob('{3}/outdir/{1}/*{2}_{1}{0:02d}_*_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))      
 
+          print('{3}/outdir/{1}/*{2}_{1}{0:02d}_*_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder))
           print(filepaths_n)
           sys.exit()
               

@@ -53,6 +53,8 @@ def main(exp):
   main_folder = "/pixel/project01/cruman/ModelData/{0}".format(exp)
   
   folder = "/home/cruman/Documents/Scripts/calc-wind"
+#  folder = "/home/cruman/projects/rrg-sushama-ab/cruman/Data"
+  folder = "/lustre03/project/6004670/cruman/Data"
 #  Cedar
 #  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
 #  Beluga
@@ -66,7 +68,7 @@ def main(exp):
 
   # to be put in a loop later. 
   for year in range(datai, dataf+1):
-    os.system('mkdir -p CSV/{0}/{1}'.format(exp, year))
+    os.system('mkdir -p {2}/CSV/{0}/{1}'.format(exp, year, folder))
 
     for month in range(1,13):
   #year = 1980
@@ -211,6 +213,7 @@ def main(exp):
           df1 = df1.assign(Dates=neg_dates_d)
           df2 = df2.assign(Dates=pos_dates_d)      
 
+          print("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm))
           df1.to_csv("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_neg.csv".format(folder, name, year, month, year, exp, mm))
           df2.to_csv("{0}/CSV/{5}/{4}/{1}_{2}{3:02d}_{6:02d}_windpress_pos.csv".format(folder, name, year, month, year, exp, mm))
 

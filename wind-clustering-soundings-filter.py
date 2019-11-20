@@ -67,9 +67,10 @@ def main():
           
           #os.mkdir('{0}/outdir'.format(main_folder))
           t = tarfile.open('{0}/{1}.tar.gz'.format(main_folder, year), 'r')
-          for member in t.getmembers():
-              if "{2}_{1}{0:02d}_windpress".format(month, year, name.replace(',',"_")) in member.name:
-                  t.extract(member, '{0}/outdir'.format(main_folder))
+          print("{2}_{1}{0:02d}_windpress".format(month, year, name.replace(',',"_")))
+          for member in t.getmembers():            
+            if "{2}_{1}{0:02d}_windpress".format(month, year, name.replace(',',"_")) in member.name:
+              t.extract(member, '{0}/outdir'.format(main_folder))
 
           #print os.listdir('outdir')
           # Open the .csv

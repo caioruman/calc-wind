@@ -9,6 +9,8 @@ import matplotlib as mpl
 from os import listdir
 from glob import glob
 import cmocean
+import tarfile
+import os
 
 from common_functions import interpPressure, calc_height
 
@@ -43,6 +45,7 @@ def main():
 
   #main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_CanHisto_NOCTEM_RUN/CSV_RCP'
   main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_ERAINT_NOCTEM_RUN/CSV_V2'
+  main_folder = '/aos/home/cruman/Documents/Scripts/calc-wind/CSV/cPanCan011_675x540_SPN'
 
 #  percentage = open('DatFiles/percentage_seasonal_v3_canesm2.txt', 'w')
 #  percentage.write("Station Neg Pos Neg1 Neg2 Pos1 Pos2\n")
@@ -61,11 +64,21 @@ def main():
         print(name, month)
         
         for year in range(datai, dataf+1):
+          
+          os.mkdir('{0}/outdir'.format(main_folder))
+          t = tarfile.open('{0}/{1}/{1}.tar'.format(main_folder, year), 'r')
+          for member in t.getmembers():
+              if "{2}_{1}{0:02d}_windpress".format(month, year, name.replace(',',"_")) in member.name:
+                  t.extract(member, '{0}/outdir'.format(main_folder))
 
+          #print os.listdir('outdir')
           # Open the .csv
           #filepaths_n.extend(glob('CSV/*{1}*_windpress_neg.csv'.format(month, year)))        
-          filepaths_n.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_neg.csv'.format(month, year, name.replace(',',"_"), main_folder)))
-          filepaths_p.extend(glob('{3}/{1}/*{2}_{1}{0:02d}_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))      
+          filepaths_n.extend(glob('{3}/outdir/*{2}_{1}{0:02d}_windpress_neg.csv'.format(month, year, name.replace(',',"_"), main_folder)))
+          filepaths_p.extend(glob('{3}/outdir/*{2}_{1}{0:02d}_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))      
+
+          print(filepaths_n)
+          sys.exit()
               
       df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)
       df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)      

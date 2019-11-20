@@ -25,7 +25,7 @@ def main():
   lons = []
   stnames = []
 
-  stations = open('stations.txt', 'r')
+  stations = open('DatFiles/stations.txt', 'r')
   for line in stations:
     aa = line.replace("\n", '').split(';')
     if (aa[0] != "#"):      
@@ -33,13 +33,13 @@ def main():
       lons.append(float(aa[5]))
       stnames.append(aa[1].replace(',',"_"))
 
-  datai = 2040
-  dataf = 2069
+  datai = 1986
+  dataf = 2015
 
-  main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_CanHisto_NOCTEM_RUN/CSV_RCP'
-  #main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_ERAINT_NOCTEM_RUN/CSV_RCP'
+  #main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_CanHisto_NOCTEM_RUN/CSV_RCP'
+  main_folder = '/pixel/project01/cruman/ModelData/PanArctic_0.5d_ERAINT_NOCTEM_RUN/CSV_RCP'
 
-  percentage = open('percentage_seasonal_v3_canesm2.txt', 'w')
+  percentage = open('DatFiles/percentage_seasonal_v3_ERA.txt', 'w')
   percentage.write("Station Neg Pos Neg1 Neg2 Pos1 Pos2\n")
 
   # looping throught all the stations
@@ -62,13 +62,13 @@ def main():
       #print(filepaths_n)
       #sys.exit()
               
-      df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)
-      df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)      
+      df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)/1.944
+      df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)/1.944      
 
       #[10.0, 15.0, 20.0, 30.0, 50.0, 70.0, 100.0, 150.0, 200.0, 250.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
       # Delete the upper levels of the atmosphere. I need only up to 700 hPa.
       df_n = df_n.drop(columns=['300.0', '400.0', '500.0', '600.0'])
-      df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0'])
+      df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0'])      
 
       p_neg = len(df_n.index)*100/(len(df_n.index) + len(df_p.index))
       p_pos = len(df_p.index)*100/(len(df_n.index) + len(df_p.index))
@@ -165,11 +165,14 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
   y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
   y = calc_height(season, 1986, 2015, y)
   #x = np.arange(0,40,1)
-  x = np.arange(0,50,0.5)
+  x = np.arange(0,35,0.5)
   X, Y= np.meshgrid(x, y)
   vmin=0
   vmax=15
   v = np.arange(vmin, vmax+1, 2)  
+
+  #print(y)
+  #sys.exit()
 
   fig, axes = plt.subplots(nrows=2, ncols=2, figsize=[28,16], sharex=True, sharey=True)
 
@@ -185,10 +188,12 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
           
     #CB = plt.colorbar(CS, extend='both', ticks=v)
     #CB.ax.tick_params(labelsize=20)
-    plt.xlim(0,39)
-    plt.ylim(min(y),max(y))
-    plt.xticks(np.arange(0,50,5), fontsize=20)
-    plt.yticks(np.arange(0,2401,200), fontsize=20)
+    from matplotlib.ticker import MultipleLocator
+    plt.xlim(0,30)
+    plt.ylim(min(y),1400)
+    plt.xticks(np.arange(0,31,5), fontsize=20)
+    
+    plt.yticks(np.arange(0,1401,100), fontsize=20)
     plt.title('({0}) {1:2.2f} % {2}'.format(letter, perc[k], shf[k]), fontsize='20')
   
   
@@ -227,8 +232,8 @@ def kmeans_probability(df):
   hist_1 = calc_histogram(df_1)
 
   # Getting the probability distribution. Kernel Density  
-  hist_0 = calc_kerneldensity(df_0)
-  hist_1 = calc_kerneldensity(df_1)
+  #hist_0 = calc_kerneldensity(df_0)
+  #hist_1 = calc_kerneldensity(df_1)
 
   #print(np.mean(df_0, axis=0), np.mean(df_1, axis=0), kmeans.cluster_centers_)
 
@@ -240,7 +245,7 @@ def calc_kerneldensity(df):
       kde_skl = KernelDensity(bandwidth=0.4)
       #aux = np.array(df_n['1000.0'])
       aux = np.copy(df[:,i])
-      aux_grid2 = np.linspace(0,50,100)
+      aux_grid2 = np.linspace(0,35,70)
       kde_skl.fit(aux[:, np.newaxis])
       log_pdf = kde_skl.score_samples(aux_grid2[:, np.newaxis])
       hist_aux.append(np.exp(log_pdf)*100)
@@ -250,7 +255,7 @@ def calc_kerneldensity(df):
 def calc_histogram(df):
 
   hist_l = []
-  bins = np.arange(0,50.25,1)
+  bins = np.arange(0,35.25,0.5)
   for i in range(0, df.shape[1]):    
     hist, bins = np.histogram(df[:,i], bins=bins)
     hist_l.append(hist*100/sum(hist))

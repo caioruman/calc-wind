@@ -38,8 +38,8 @@ def main():
       stnames.append(aa[1])
       sheights.append(float(aa[7]))
 
-  datai = 1986
-  dataf = 2015
+  datai = 1990
+  dataf = 2010
 
   read_s = False
 
@@ -66,7 +66,7 @@ def main():
         for year in range(datai, dataf+1):
           
           os.mkdir('{0}/outdir'.format(main_folder))
-          t = tarfile.open('{0}/{1}/{1}.tar'.format(main_folder, year), 'r')
+          t = tarfile.open('{0}/{1}/{1}.tar.gz'.format(main_folder, year), 'r')
           for member in t.getmembers():
               if "{2}_{1}{0:02d}_windpress".format(month, year, name.replace(',',"_")) in member.name:
                   t.extract(member, '{0}/outdir'.format(main_folder))

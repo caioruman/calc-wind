@@ -127,68 +127,20 @@ def main():
       # K-means for the model data
       centroids_model_n, histo_model_n, perc_model_n = kmeans_probability(df_n)
       centroids_model_p, histo_model_p, perc_model_p = kmeans_probability(df_p)
-
-      print(centroids_model_n[0])
-      print(histo_n[0])
-      sys.exit()
-      fname = 'joyplot_neg0.png'
-      plot_joyplot([centroids_n[0], centroids_model_n[0]], [histo_n[0], histo_model_n[0]], fname)
-
-      cent = []
-      histo = []
-      perc = []
-      shf = []
-      height_list = []
-
-      height_list.append(height_mean_n.values)
-      height_list.append(height_mean_n.values)
-      height_list.append(height_mean_p.values)
-      height_list.append(height_mean_p.values)
-
-      if (perc_n[0] > perc_n[1]):
-        k = 0
-        j = 1
-      else:
-        k = 1
-        j = 0
-
-      cent.append(centroids_n[k])
-      cent.append(centroids_n[j])
-
-      histo.append(histo_n[k])
-      histo.append(histo_n[j])
-
-      perc.append(perc_n[k])
-      perc.append(perc_n[j])
-
-      shf.append('SHF-')
-      shf.append('SHF-')
-
-      #plot_wind(centroids_n[0], histo_n[0], perc_n[0], datai, dataf, name, "negative_type1", sname)
-      #plot_wind(centroids_n[1], histo_n[1], perc_n[1], datai, dataf, name, "negative_type2", sname)      
-
       
+      height_list = []
+      height_list.append(height_mean_n.values)
+      height_list.append(height_mean_n.values)
+      height_list.append(height_mean_p.values)
+      height_list.append(height_mean_p.values)         
 
-      if (perc_p[0] > perc_p[1]):
-        k = 0
-        j = 1
-      else:
-        k = 1
-        j = 0
+      cent, histo, perc, shf = create_lists_preplot(centroids_n, centroids_p, histo_n, histo_p, perc_n, perc_p)
 
-      cent.append(centroids_p[k])
-      cent.append(centroids_p[j])
+      plot_wind_seasonal(cent, histo, perc, shf, datai, dataf, name.replace(',',"_"), sname, season, height_list, 'soundings')
 
-      histo.append(histo_p[k])
-      histo.append(histo_p[j])
-
-      perc.append(perc_p[k])
-      perc.append(perc_p[j])
-
-      shf.append('SHF+')
-      shf.append('SHF+')
-
-      plot_wind_seasonal(cent, histo, perc, shf, datai, dataf, name.replace(',',"_"), sname, season, height_list)
+      cent, histo, perc, shf = create_lists_preplot(centroids_model_n, centroids_model_p, histo_model_n, histo_model_p, perc_model_n, perc_model_p)
+   
+      plot_wind_seasonal(cent, histo, perc, shf, datai, dataf, name.replace(',',"_"), sname, season, height_list, 'model')
 
       p_neg = len(df_wind_n.index)*100/(len(df_wind_n.index) + len(df_wind_p.index))
       p_pos = len(df_wind_p.index)*100/(len(df_wind_n.index) + len(df_wind_p.index))
@@ -202,11 +154,53 @@ def main():
 
 #  percentage.close()
 
-def plot_joyplot(centroids, histo, fname):
+def create_lists_preplot(centroids_n, centroids_p, histo_n, histo_p, perc_n, perc_p):
+  cent = []
+  histo = []
+  perc = []
+  shf = []
 
-  print("teste")
+  if (perc_n[0] > perc_n[1]):
+    k = 0
+    j = 1
+  else:
+    k = 1
+    j = 0
 
-def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, season, height):
+  cent.append(centroids_n[k])
+  cent.append(centroids_n[j])
+
+  histo.append(histo_n[k])
+  histo.append(histo_n[j])
+
+  perc.append(perc_n[k])
+  perc.append(perc_n[j])
+
+  shf.append('SHF-')
+  shf.append('SHF-')      
+
+  if (perc_p[0] > perc_p[1]):
+    k = 0
+    j = 1
+  else:
+    k = 1
+    j = 0
+
+  cent.append(centroids_p[k])
+  cent.append(centroids_p[j])
+
+  histo.append(histo_p[k])
+  histo.append(histo_p[j])
+
+  perc.append(perc_p[k])
+  perc.append(perc_p[j])
+
+  shf.append('SHF+')
+  shf.append('SHF+')
+
+  return cent, histo, perc, shf
+
+def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, season, height, ntype):
 
   y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
   #y = calc_height(season, 1986, 2015, y)
@@ -250,7 +244,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
   CB = plt.colorbar(CS, cax=cax, extend='both', ticks=v)  
   CB.ax.tick_params(labelsize=20)
   #plt.tight_layout()
-  plt.savefig('Images/Soundings/Soun_{0}_{1}{2}_{3}.png'.format(name, datai, dataf, period), bbox_inches='tight')
+  plt.savefig('Images/Soundings/Soun_{0}_{1}{2}_{3}_{4}.png'.format(name, datai, dataf, period, ntype), bbox_inches='tight')
   plt.close()
   #sys.exit()
 
@@ -273,11 +267,7 @@ def kmeans_probability(df):
 
   # Dividing between the 2 clusters
   df_0 = df_a[labels,:]
-  df_1 = df_a[~labels,:]
-
-  print(df)
-  print(df_0)
-  sys.exit()
+  df_1 = df_a[~labels,:]  
 
   # Getting the probability distribution. Bins of 0.5 m/s
   hist_0, bins_0 = calc_histogram(df_0)
@@ -291,7 +281,7 @@ def kmeans_probability(df):
 
   #print(np.mean(df_0, axis=0), np.mean(df_1, axis=0), kmeans.cluster_centers_)
 
-  return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]], df_0, df_1
+  return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]]
 
 def calc_kerneldensity(df):
   hist_aux = []

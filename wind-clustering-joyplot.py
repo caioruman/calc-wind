@@ -262,10 +262,7 @@ def kmeans_probability(df):
 
     returns: Array of the centroids, the two histograms and % of each group
   '''
-  kmeans = KMeans(n_clusters=2, random_state=0).fit(df)
-
-  print(df.columns)
-  sys.exit()
+  kmeans = KMeans(n_clusters=2, random_state=0).fit(df)  
         
   # Getting the location of each group.
   pred = kmeans.predict(df)
@@ -278,9 +275,15 @@ def kmeans_probability(df):
   df_0 = df_a[labels,:]
   df_1 = df_a[~labels,:]
 
+  print(df)
+  print(df_0)
+  sys.exit()
+
   # Getting the probability distribution. Bins of 0.5 m/s
   hist_0, bins_0 = calc_histogram(df_0)
   hist_1, bins_1 = calc_histogram(df_1)
+
+  # back do a dataframe
 
   # Getting the probability distribution. Kernel Density  
   #hist_0 = calc_kerneldensity(df_0)
@@ -288,7 +291,7 @@ def kmeans_probability(df):
 
   #print(np.mean(df_0, axis=0), np.mean(df_1, axis=0), kmeans.cluster_centers_)
 
-  return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]]
+  return kmeans.cluster_centers_, [hist_0, hist_1], [df_0.shape[0]*100/df_a.shape[0], df_1.shape[0]*100/df_a.shape[0]], df_0, df_1
 
 def calc_kerneldensity(df):
   hist_aux = []

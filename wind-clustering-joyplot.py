@@ -85,7 +85,8 @@ def main():
           filepaths_p.extend(glob('{3}/outdir/{1}/*{2}_{1}{0:02d}_*_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))     
 
       # Reading the model data     
-      print("testing for errors - line 88") 
+      print("testing for errors - line 88")
+      print(filepaths_n) 
       df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)
       print("testing for errors - line 90") 
       df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)

@@ -71,9 +71,10 @@ def main():
           reT = re.compile(r'.*?{0}_.*?{1}{2:02d}_.*?_windpress.*?'.format(name.replace(',',"_"), year, month))
           
           #os.mkdir('{0}/outdir'.format(main_folder))
-          print('{0}/outdir/{1}/{3}_{1}{2:02d}_01_windpress_neg.csv'.format(main_folder, year, month, name.replace(',',"_")))
-          sys.exit()
+          #print('{0}/outdir/{1}/{3}_{1}{2:02d}_01_windpress_neg.csv'.format(main_folder, year, month, name.replace(',',"_")))
+          #sys.exit()
           if not os.path.exists('{0}/outdir/{1}/{3}_{1}{2:02d}_01_windpress_neg.csv'.format(main_folder, year, month, name.replace(',',"_"))):
+            # if already extracted the file, don't do it again
             t = tarfile.open('{0}/{1}.tar.gz'.format(main_folder, year), 'r')
             t.extractall('{0}/outdir'.format(main_folder), members=[m for m in t.getmembers() if reT.search(m.name)])          
 
@@ -83,8 +84,10 @@ def main():
           filepaths_n.extend(glob('{3}/outdir/{1}/*{2}_{1}{0:02d}_*_windpress_neg.csv'.format(month, year, name.replace(',',"_"), main_folder)))
           filepaths_p.extend(glob('{3}/outdir/{1}/*{2}_{1}{0:02d}_*_windpress_pos.csv'.format(month, year, name.replace(',',"_"), main_folder)))     
 
-      # Reading the model data      
+      # Reading the model data     
+      print("testing for errors - line 88") 
       df_n = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_n), ignore_index=True)/1.944
+      print("testing for errors - line 90") 
       df_p = pd.concat((pd.read_csv(f, index_col=0) for f in filepaths_p), ignore_index=True)/1.944    
 
       #[10.0, 15.0, 20.0, 30.0, 50.0, 70.0, 100.0, 150.0, 200.0, 250.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
@@ -98,6 +101,7 @@ def main():
       # Open the soundings data
       # location: /pixel/project01/cruman/Data/Soundings/                 
       # Reading Soundings data
+      print("testing for errors - soundings") 
       df_height_n = pd.read_csv('DatFiles/Soundings/{0}_{1}_{2}-{3}_height_neg.csv'.format(name.replace(',',"_"), sname, datai, dataf), index_col=0).dropna()
       df_height_p = pd.read_csv('DatFiles/Soundings/{0}_{1}_{2}-{3}_height_pos.csv'.format(name.replace(',',"_"), sname, datai, dataf), index_col=0).dropna()
       df_temp_n = pd.read_csv('DatFiles/Soundings/{0}_{1}_{2}-{3}_temp_neg.csv'.format(name.replace(',',"_"), sname, datai, dataf), index_col=0).dropna()

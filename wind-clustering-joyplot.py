@@ -71,9 +71,12 @@ def main():
           reT = re.compile(r'.*?{0}_.*?{1}{2:02d}_.*?_windpress.*?'.format(name.replace(',',"_"), year, month))
           
           #os.mkdir('{0}/outdir'.format(main_folder))
-          t = tarfile.open('{0}/{1}.tar.gz'.format(main_folder, year), 'r')
-          t.extractall('{0}/outdir'.format(main_folder), members=[m for m in t.getmembers() if reT.search(m.name)])          
-          
+          print('{0}/outdir/{1}/{3}_{1}{2:02d}_01_windpress_neg.csv'.format(main_folder, year, month, name.replace(',',"_")))
+          sys.exit()
+          if not os.path.exists('{0}/outdir/{1}/{3}_{1}{2:02d}_01_windpress_neg.csv'.format(main_folder, year, month, name.replace(',',"_"))):
+            t = tarfile.open('{0}/{1}.tar.gz'.format(main_folder, year), 'r')
+            t.extractall('{0}/outdir'.format(main_folder), members=[m for m in t.getmembers() if reT.search(m.name)])          
+
           #print os.listdir('outdir')
           # Open the .csv
           #filepaths_n.extend(glob('CSV/*{1}*_windpress_neg.csv'.format(month, year)))        

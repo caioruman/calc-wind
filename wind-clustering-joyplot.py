@@ -92,10 +92,12 @@ def main():
 
       #[10.0, 15.0, 20.0, 30.0, 50.0, 70.0, 100.0, 150.0, 200.0, 250.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
       # Delete the upper levels of the atmosphere. I need only up to 700 hPa.
-      df_n = df_n.drop(columns=['300.0', '400.0', '500.0', '600.0','Dates'])
-      df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0','Dates'])
+      df_n = df_n.drop(columns=['300.0', '400.0', '500.0', '600.0', '700.0','Dates'])
+      df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0','700.0','Dates'])
       df_n = df_n/1.944
       df_p = df_p/1.944
+      df_n = df_n.reindex(sorted(df_n.columns), axis=1)
+      df_p = df_p.reindex(sorted(df_p.columns), axis=1)
 
       p_neg_model = len(df_n.index)*100/(len(df_n.index) + len(df_p.index))
       p_pos_model = len(df_p.index)*100/(len(df_n.index) + len(df_p.index))
@@ -119,6 +121,11 @@ def main():
             
       df_wind_n = df_wind_n.drop(columns=['Date'])
       df_wind_p = df_wind_p.drop(columns=['Date'])
+      df_wind_n = df_wind_n.reindex(sorted(df_wind_n.columns), axis=1)      
+      df_wind_p = df_wind_p.reindex(sorted(df_wind_p.columns), axis=1)
+
+      print(df_p.columns)
+      print(df_wind_p.columns)
 
       # K-means for the soundings
       centroids_n, histo_n, perc_n = kmeans_probability(df_wind_n)
@@ -202,7 +209,11 @@ def create_lists_preplot(centroids_n, centroids_p, histo_n, histo_p, perc_n, per
 
 def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, season, height, ntype):
 
-  y = [700.0, 800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
+  if ntype == 'model':
+    y = [800.0, 850.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
+  else:
+    y = [850.0, 875.0, 900.0, 925.0, 950.0, 975.0, 1000.0]
+    
   #y = calc_height(season, 1986, 2015, y)
   #x = np.arange(0,40,1)
   
@@ -235,7 +246,7 @@ def plot_wind_seasonal(centroids, histo, perc, shf, datai, dataf, name, period, 
     plt.xlim(0,30)
     plt.ylim(min(y),max(y))
     plt.xticks(np.arange(0,31,5), fontsize=20)
-    plt.yticks(np.arange(0,1401,100), fontsize=20)
+    plt.yticks(np.arange(0,1000,100), fontsize=20)
     plt.title('({0}) {1:2.2f} % {2}'.format(letter, perc[k], shf[k]), fontsize='20')
   
   

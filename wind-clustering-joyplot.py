@@ -94,6 +94,8 @@ def main():
       # Delete the upper levels of the atmosphere. I need only up to 700 hPa.
       df_n = df_n.drop(columns=['300.0', '400.0', '500.0', '600.0','Dates'])
       df_p = df_p.drop(columns=['300.0', '400.0', '500.0', '600.0','Dates'])
+      df_n = df_n/1.944
+      df_p = df_p/1.944
 
       p_neg_model = len(df_n.index)*100/(len(df_n.index) + len(df_p.index))
       p_pos_model = len(df_p.index)*100/(len(df_n.index) + len(df_p.index))
@@ -261,6 +263,9 @@ def kmeans_probability(df):
     returns: Array of the centroids, the two histograms and % of each group
   '''
   kmeans = KMeans(n_clusters=2, random_state=0).fit(df)
+
+  print(df.columns)
+  sys.exit()
         
   # Getting the location of each group.
   pred = kmeans.predict(df)
@@ -274,8 +279,8 @@ def kmeans_probability(df):
   df_1 = df_a[~labels,:]
 
   # Getting the probability distribution. Bins of 0.5 m/s
-  hist_0 = calc_histogram(df_0)
-  hist_1 = calc_histogram(df_1)
+  hist_0, bins_0 = calc_histogram(df_0)
+  hist_1, bins_1 = calc_histogram(df_1)
 
   # Getting the probability distribution. Kernel Density  
   #hist_0 = calc_kerneldensity(df_0)
@@ -307,7 +312,7 @@ def calc_histogram(df):
     hist, bins = np.histogram(df[:,i], bins=bins)
     hist_l.append(hist*100/sum(hist))
 
-  return np.array(hist_l)
+  return np.array(hist_l), bins
     
 
 

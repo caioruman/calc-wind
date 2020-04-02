@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --time=14:00:00
-#SBATCH --account=def-sushama
+#SBATCH --account=def-sushama-ab
 #SBATCH --mem-per-cpu=6144M      # memory; default unit is megabytes
 #SBATCH --cpus-per-task=1
 
@@ -26,7 +26,7 @@ export LD_LIBRARY_PATH=~huziy/lib:${LD_LIBRARY_PATH}
 
 # launch the script
 
-python /home/cruman/Scripts/calc-wind/wind-dist.py
+python /home/cruman/scratch/Scripts/calc-wind/wind-distrcp45.py 2070 2085
 
 # in_nc_file=/home/poitras/ddm/directions_WestCaUs_dx0.11deg.nc3
 # out_fst_file=/scratch/huziy/directions_WestCaUs_dx0.11deg.fst

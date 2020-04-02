@@ -4,6 +4,7 @@ import sys
 from scipy import stats
 import matplotlib.pyplot as plt
 import os
+import argparse
 
 from datetime import date, datetime, timedelta
 
@@ -26,25 +27,35 @@ import time
   - K-mean clustering of those two timeseries
 '''
 
+parser=argparse.ArgumentParser(description='Separates the wind profiles based on SHF', formatter_class=argparse.RawTextHelpFormatter)
+#parser.add_argument("-op", "--opt-arg", type=str, dest='opcional', help="Algum argumento opcional no programa", default=False)
+parser.add_argument("anoi", type=int, help="Ano", default=0)
+parser.add_argument("anof", type=int, help="Anof", default=0)
+args=parser.parse_args()
+
+datai = args.anoi
+dataf = args.anof
+
+
 def main():
 
   exp = "PanArctic_0.5d_ERAINT_NOCTEM_RUN"
   exp = "PanArctic_0.5d_CanHisto_NOCTEM_RUN"
-  exp = "cAYNWT_004deg_900x800_clef"
-  exp = "cPanCan011_675x540_SPN"
+#  exp = "cAYNWT_004deg_900x800_clef"
+#  exp = "cPanCan011_675x540_SPN"
   main_folder = "/pixel/project01/cruman/ModelData/{0}".format(exp)
   folder = "/home/cruman/Scripts/calc-wind"
 #  Cedar
-#  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
+  main_folder = "/home/cruman/projects/rrg-sushama-ab/teufel/{0}".format(exp)
 #  Beluga
-  main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
+#  main_folder = "/home/poitras/projects/rrg-sushama-ab/poitras/storage_model/Output/DORVAL/{0}".format(exp)
 
-  datai = 2000
-  dataf = 2015
+#  datai = 1976
+#  dataf = 2006
 
   # to be put in a loop later. 
   for year in range(datai, dataf+1):
-    os.system('mkdir -p CSV_RCP/{0}'.format(year))
+    os.system('mkdir -p {1}/CSV_RCP/{0}'.format(year, folder))
 
     for month in range(1,13):
   #year = 1980
@@ -56,6 +67,11 @@ def main():
 
     #  sp_lat = 47.391348
     #  sp_lon = -61.850658
+      name = "71925__Cambridge_Bay__NT_YCB"
+      if os.path.exists("{0}/CSV_RCP/{4}/{1}_{2}{3:02d}_windpress_neg.csv".format(folder, name, year, month, year)):
+        print("Month already calculated. skipping.")
+        continue
+
 
       arq_dp = glob("{0}/Samples/{1}_{2}{3:02d}/dp*".format(main_folder, exp, year, month))[0]
       arq_dm = glob("{0}/Samples/{1}_{2}{3:02d}/dm*".format(main_folder, exp, year, month))[0]
@@ -64,6 +80,7 @@ def main():
       # Reading SHF
       with RPN(arq_pm) as r:
         print("Opening file {0}".format(arq_pm))
+#        sys.exit()
         shf = np.squeeze(r.variables["AH"][:])
         surf_temp = np.squeeze(r.variables["J8"][:]) - 273.15
 
@@ -112,7 +129,7 @@ def main():
       lons = []
       stnames = []
 
-      stations = open('stations.txt', 'r')
+      stations = open('/home/cruman/scratch/Scripts/calc-wind/stations.txt', 'r')
       for line in stations:
         aa = line.replace("\n", '').split(';')
         if (aa[0] != "#"):      
